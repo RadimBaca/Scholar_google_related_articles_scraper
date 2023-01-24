@@ -1,15 +1,15 @@
 # Scholar google related articles scraper
 
-This repository search the scholar google according to the query input, it scrapes the result articles and continue searching relatd articles. It repeat the proces five times. The best input of the program is an article name. 
+This program searches the scholar google according to the query input, it scrapes the result articles and continues searching for related articles. It repeats the process five times. The best input of the program is an article name. 
 
-Program requires several libraries:
+The program requires several libraries:
 - requests
 - BeautifulSoup
 
-```pyton
+```python
 pip install requests
 pip install BeautifulSoup4
 python gs_related_work.py "Product quantization for nearest neighbor search"
 ```
 
-Warning: The scholar.google.com start to verify your requests after a several attempts of this program and the program will stop to work.
+Warning: The scholar.google.com start to verify your requests after several attempts of this program and the program will stop working.
