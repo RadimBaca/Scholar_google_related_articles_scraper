@@ -12,3 +12,4 @@ pip install BeautifulSoup4
 python gs_related_work.py "Product quantization for nearest neighbor search"
 ```
 
+Warning: The scholar.google.com start to verify your requests after a several attempts of this program and the program will stop to work.
