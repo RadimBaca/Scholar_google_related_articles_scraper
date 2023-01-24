@@ -5,7 +5,6 @@ This repository search the scholar google according to the query input, it scrap
 Program requires several libraries:
 - requests
 - BeautifulSoup
-- scholarly - however, I commented the code using this library, therefore it can be removed from the program
 
 ```pyton
 pip install requests
