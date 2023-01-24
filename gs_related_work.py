@@ -2,7 +2,6 @@
 import sys
 import requests
 from bs4 import BeautifulSoup
-import scholarly
 
 articles = [] # list of articles
 
@@ -16,7 +15,7 @@ class Article:
         self.related_articles = related_articles
 
     def __str__(self):
-        return self.title + ' ' + str(self.citation_count)
+        return self.title + ', ' + str(self.year) + ', citation count ' + str(self.citation_count)
 
     # override the __eq__ method to compare two articles
     def __eq__(self, other):
@@ -32,8 +31,8 @@ def scrape_related_articles(url):
         article_title = article.find('h3', class_='gs_rt') # get the title of the article
 
         div_article_info = article.find('div', class_='gs_fl') # get div element with the citation count in the third a child element
-        citation_count_str = div_article_info.find_all('a')[2].text # get the citation count string with prefix Cited by
-        citation_count = int(citation_count_str[len('Cited by '):]) # get suffix of the citation count string without Cited by prefix
+        citation_count_str = div_article_info.find_all('a')[2].text # get the citation count string
+        citation_count = int(citation_count_str[citation_count_str.rfind(' '):]) # get suffix of the citation count string
 
         related_articles = div_article_info.find_all('a')[3].get('href') # get the related articles url
 
@@ -41,7 +40,7 @@ def scrape_related_articles(url):
         last_hyphen_position = article_year_str.rfind(' - ') # get the position of the last hyphen
         article_year = int(article_year_str[last_hyphen_position - 4: last_hyphen_position]) # get the year of the article
 
-        article = Article(article_title.a.text, article_year, citation_count, related_articles) # create Article object
+        article = Article(article_title.a.text, citation_count, article_year, related_articles) # create Article object
         if article not in articles:
             articles.append(article) # append the article object to the list of articles if it is not already in the list
 
@@ -70,6 +69,7 @@ def search_related_articles(publication_title, repeat_count=5):
             if not article.processed:
                 print("Searching " + article.title + "\n");
                 related_articles = article.related_articles
+                article.processed = True
                 article_founded = True
                 break
         if not article_founded:
