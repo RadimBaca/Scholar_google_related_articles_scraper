@@ -6,7 +6,7 @@ The program requires several libraries:
 - requests
 - BeautifulSoup
 
-```python
+```bash
 pip install requests
 pip install BeautifulSoup4
 python gs_related_work.py "Product quantization for nearest neighbor search"
