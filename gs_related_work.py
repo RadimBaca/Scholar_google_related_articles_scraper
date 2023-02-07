@@ -7,15 +7,16 @@ articles = [] # list of articles
 
 # create article class
 class Article:
-    def __init__(self, title, citation_count, year, related_articles, processed=False):
+    def __init__(self, title, citation_count, year, related_articles, journal, processed=False):
         self.title = title
         self.citation_count = citation_count
         self.year = year
         self.processed = processed
         self.related_articles = related_articles
+        self.journal = journal
 
     def __str__(self):
-        return self.title + ', ' + str(self.year) + ', citation count ' + str(self.citation_count)
+        return self.title + ', ' + self.journal + ', ' + str(self.year) + ', citation count ' + str(self.citation_count)
 
     # override the __eq__ method to compare two articles
     def __eq__(self, other):
@@ -32,7 +33,12 @@ def scrape_related_articles(url):
 
         div_article_info = article.find('div', class_='gs_fl') # get div element with the citation count in the third a child element
         citation_count_str = div_article_info.find_all('a')[2].text # get the citation count string
-        citation_count = int(citation_count_str[citation_count_str.rfind(' '):]) # get suffix of the citation count string
+        citation_count_str_suffix = citation_count_str[citation_count_str.rfind(' '):] # get the suffix of the citation count string
+        # test wether the citation count is a number or a string
+        try:
+            citation_count = int(citation_count_str_suffix)
+        except ValueError:
+            continue
 
         related_articles = div_article_info.find_all('a')[3].get('href') # get the related articles url
 
@@ -40,7 +46,11 @@ def scrape_related_articles(url):
         last_hyphen_position = article_year_str.rfind(' - ') # get the position of the last hyphen
         article_year = int(article_year_str[last_hyphen_position - 4: last_hyphen_position]) # get the year of the article
 
-        article = Article(article_title.a.text, citation_count, article_year, related_articles) # create Article object
+        # journal is between the year and the hyphen before the year
+        prev_hyphen_position = article_year_str.rfind('- ', 0, last_hyphen_position)
+        journal = article_year_str[prev_hyphen_position + 1: last_hyphen_position - 7]
+
+        article = Article(article_title.a.text, citation_count, article_year, related_articles, journal) # create Article object
         if article not in articles:
             articles.append(article) # append the article object to the list of articles if it is not already in the list
 
@@ -56,7 +66,7 @@ def scrape_related_articles(url):
 #         a.processed = True
 #     return dict_publication.get('url_related_articles')
 
-def search_related_articles(publication_title, repeat_count=5):
+def search_related_articles(publication_title, repeat_count=10):
     print("Searching " + publication_title + "\n");
     # replace space with + and search for the publication
     publication_title = publication_title.replace(' ', '+')
